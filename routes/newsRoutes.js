@@ -6,7 +6,7 @@ const {
   toggleLike,
 } = require('../controllers/newsController');
 
-const protect = require('../middleware/authMiddleware');
+const auth = require('../middleware/auth'); // your existing JWT middleware
 
 /**
  * GET ALL NEWS
