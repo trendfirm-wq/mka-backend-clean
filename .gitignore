@@ -1,0 +1,12 @@
+# Dependencies
+node_modules/
+
+# Environment
+.env
+
+# Media files (do NOT push)
+public/videos/*
+public/audio/*
+
+# Logs
+npm-debug.log*
