@@ -18,6 +18,7 @@ router.get('/', getAllNews);
  * LIKE / UNLIKE NEWS
  * Protected (login required)
  */
-router.post('/:id/like', auth, toggleLike);
+router.put('/:id/like', auth, toggleLike);
+
 
 module.exports = router;
