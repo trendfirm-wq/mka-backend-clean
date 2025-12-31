@@ -5,6 +5,10 @@ const newsSchema = new mongoose.Schema(
     caption: String,
     videoKey: String,
 
+    image: {
+      type: String, // Cloudinary image URL
+    },
+
     likesCount: {
       type: Number,
       default: 0,

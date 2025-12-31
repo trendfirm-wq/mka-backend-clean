@@ -10,10 +10,12 @@ exports.getAllNews = async (req, res) => {
 
     const formatted = newsList.map(item => ({
       _id: item._id,
-      title: item.title,
       caption: item.caption,
-      image: item.image,
       videoKey: item.videoKey,
+
+      // ✅ FIX #1: image field now officially supported (Cloudinary URL)
+      image: item.image || null,
+
       createdAt: item.createdAt,
       likesCount: item.likesCount || 0,
     }));
@@ -43,9 +45,11 @@ exports.toggleLike = async (req, res) => {
       .includes(userId);
 
     if (alreadyLiked) {
+      // 👎 UNLIKE
       news.likedBy.pull(userId);
       news.likesCount = Math.max(0, news.likesCount - 1);
     } else {
+      // ❤️ LIKE
       news.likedBy.push(userId);
       news.likesCount += 1;
     }
