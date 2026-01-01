@@ -2,7 +2,6 @@ const express = require('express');
 const ForumQuestion = require('../models/ForumQuestion');
 const Short = require('../models/Short');
 
-const Question = require('../models/Question'); // forum
 
 const router = express.Router();
 
