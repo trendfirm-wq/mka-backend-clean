@@ -1,6 +1,7 @@
 const express = require('express');
 const ForumQuestion = require('../models/ForumQuestion');
 const Short = require('../models/Short');
+
 const Question = require('../models/Question'); // forum
 
 const router = express.Router();
@@ -60,25 +61,35 @@ router.put('/:id', async (req, res) => {
   }
 });
 router.post('/:id/answer', async (req, res) => {
-  const { body, author, createdAt } = req.body;
+  try {
+    const { body, author, createdAt } = req.body;
 
-  // 1️⃣ Try forum question
-  let doc = await Question.findById(req.params.id);
+    // 1️⃣ Try forum question
+    let doc = await ForumQuestion.findById(req.params.id);
 
-  // 2️⃣ If not found, try short
-  if (!doc) {
-    doc = await Short.findById(req.params.id);
+    // 2️⃣ If not forum question, try short
+    if (!doc) {
+      doc = await Short.findById(req.params.id);
+    }
+
+    if (!doc) {
+      return res.status(404).json({ message: 'Item not found' });
+    }
+
+    doc.answers.unshift({
+      body,
+      author,
+      createdAt,
+    });
+
+    await doc.save();
+
+    // 🔥 VERY IMPORTANT: return FULL updated document
+    res.json(doc);
+  } catch (err) {
+    console.error('Post answer error:', err);
+    res.status(500).json({ message: 'Server error' });
   }
-
-  if (!doc) {
-    return res.status(404).json({ message: 'Item not found' });
-  }
-
-  doc.answers.unshift({ body, author, createdAt });
-  await doc.save();
-
-  // 🔥 return FULL updated object
-  res.json(doc);
 });
 
 module.exports = router;
