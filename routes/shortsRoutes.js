@@ -21,20 +21,25 @@ router.get('/seed', async (req, res) => {
 
     await Short.deleteMany({});
 
-    await Short.insertMany([
-      {
-        videoKey: 'short1.mp4',
-        caption: 'Ijtema moments 🇬🇭',
-      },
-      {
-        videoKey: 'short2.mp4',
-        caption: 'Brotherhood & discipline',
-      },
-      {
-        videoKey: 'short3.mp4',
-        caption: 'Khuddam in action',
-      },
-    ]);
+  await Short.insertMany([
+  {
+    videoKey: 'short1.mp4',
+    caption: 'Ijtema moments 🇬🇭',
+    answers: [],
+  },
+  {
+    videoKey: 'short2.mp4',
+    caption: 'Brotherhood & discipline',
+    answers: [],
+  },
+  {
+    videoKey: 'short3.mp4',
+    caption: 'Khuddam in action',
+    answers: [],
+  },
+]);
+
+
 
     res.json({ message: 'Shorts seeded successfully' });
   } catch (error) {

@@ -1,23 +1,29 @@
 const mongoose = require('mongoose');
 
-const shortSchema = new mongoose.Schema(
+const AnswerSchema = new mongoose.Schema({
+  body: String,
+  author: String,
+  createdAt: Number,
+});
+
+const ShortSchema = new mongoose.Schema(
   {
     videoKey: {
       type: String,
-      required: true, // e.g. short1.mp4
+      required: true,
     },
     caption: {
       type: String,
-      required: true,
+      default: '',
     },
-    createdBy: {
-      type: mongoose.Schema.Types.ObjectId,
-      ref: 'User',
+
+    // ✅ COMMENTS (FORUM STYLE)
+    answers: {
+      type: [AnswerSchema],
+      default: [],
     },
   },
-  {
-    timestamps: true,
-  }
+  { timestamps: true }
 );
 
-module.exports = mongoose.model('Short', shortSchema);
+module.exports = mongoose.model('Short', ShortSchema);
