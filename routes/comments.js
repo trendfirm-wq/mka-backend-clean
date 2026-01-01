@@ -3,35 +3,53 @@ const router = express.Router();
 const Comment = require('../models/Comment');
 const auth = require('../middleware/auth');
 
-/* ➕ ADD COMMENT */
+/* ================= ADD COMMENT ================= */
 router.post('/shorts/:shortId', auth, async (req, res) => {
-  const { text } = req.body;
-  if (!text) return res.status(400).json({ message: 'Comment required' });
+  try {
+    const { text } = req.body;
+    if (!text) {
+      return res.status(400).json({ message: 'Comment text required' });
+    }
 
-  const comment = await Comment.create({
-    shortId: req.params.shortId,
-    userId: req.user.id,
-    text,
-  });
+    const comment = await Comment.create({
+      shortId: req.params.shortId,
+      userId: req.user.id,
+      text,
+    });
 
-  res.json(comment);
+    res.json(comment);
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ message: 'Failed to save comment' });
+  }
 });
 
-/* 📥 GET COMMENTS */
+/* ================= GET COMMENTS ================= */
 router.get('/shorts/:shortId', async (req, res) => {
-  const comments = await Comment.find({ shortId: req.params.shortId })
-    .sort({ createdAt: -1 });
+  try {
+    const comments = await Comment.find({
+      shortId: req.params.shortId,
+    }).sort({ createdAt: -1 });
 
-  res.json(comments);
+    res.json(comments);
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ message: 'Failed to fetch comments' });
+  }
 });
 
-/* 🔢 COUNT */
+/* ================= COUNT ================= */
 router.get('/shorts/:shortId/count', async (req, res) => {
-  const count = await Comment.countDocuments({
-    shortId: req.params.shortId,
-  });
+  try {
+    const count = await Comment.countDocuments({
+      shortId: req.params.shortId,
+    });
 
-  res.json({ count });
+    res.json({ count });
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ message: 'Failed to count comments' });
+  }
 });
 
 module.exports = router;
