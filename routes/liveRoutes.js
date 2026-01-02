@@ -40,4 +40,39 @@ router.post('/start', auth, async (req, res) => {
   }
 });
 
+/* ================= GET ACTIVE LIVES ================= */
+router.get('/active', async (req, res) => {
+  try {
+    const lives = await Live.find({ isLive: true })
+      .sort({ startedAt: -1 })
+      .select('title playbackUrl startedAt userId');
+
+    res.json(lives);
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ message: 'Failed to fetch live sessions' });
+  }
+});
+
+/* ================= STOP LIVE ================= */
+router.post('/stop', auth, async (req, res) => {
+  try {
+    const userId = req.user.id;
+
+    const live = await Live.findOne({ userId, isLive: true });
+    if (!live) {
+      return res.status(404).json({ message: 'No active live found' });
+    }
+
+    live.isLive = false;
+    live.endedAt = new Date();
+    await live.save();
+
+    res.json({ message: 'Live ended successfully' });
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ message: 'Failed to stop live' });
+  }
+});
+
 module.exports = router;
