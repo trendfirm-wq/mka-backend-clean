@@ -96,7 +96,7 @@ router.post('/stop', auth, async (req, res) => {
 });
 router.post('/webrtc/offer', auth, async (req, res) => {
   try {
-    const { sdp, type } = req.body;
+    const { sdp } = req.body;
 
     const live = await Live.findOne({ userId: req.user.id, isLive: true });
     if (!live || !live.webrtcUrl) {
