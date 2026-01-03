@@ -74,5 +74,25 @@ router.post('/stop', auth, async (req, res) => {
     res.status(500).json({ message: 'Failed to stop live' });
   }
 });
+/* ================= STOP LIVE ================= */
+router.post('/stop', auth, async (req, res) => {
+  try {
+    const userId = req.user.id;
+
+    const live = await Live.findOne({ userId, isLive: true });
+
+    if (!live) {
+      return res.json({ message: 'No active live session' });
+    }
+
+    live.isLive = false;
+    await live.save();
+
+    res.json({ message: 'Live stopped' });
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ message: 'Failed to stop live' });
+  }
+});
 
 module.exports = router;
