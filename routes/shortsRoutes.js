@@ -57,5 +57,35 @@ router.get('/seed', async (req, res) => {
     res.status(500).json({ message: 'Seeding failed' });
   }
 });
+/**
+ * CREATE SHORT (USER UPLOAD → PENDING)
+ * POST /api/shorts
+ */
+router.post('/', async (req, res) => {
+  try {
+    const { videoKey, caption, author } = req.body;
+
+    if (!videoKey || !author) {
+      return res
+        .status(400)
+        .json({ message: 'videoKey and author are required' });
+    }
+
+    const short = await Short.create({
+      videoKey,
+      caption: caption || '',
+      author,
+      status: 'pending', // 🔥 FORCE MODERATION
+    });
+
+    res.json({
+      message: 'Short submitted for review',
+      shortId: short._id,
+    });
+  } catch (err) {
+    console.error('Create short error:', err);
+    res.status(500).json({ message: 'Failed to create short' });
+  }
+});
 
 module.exports = router;
