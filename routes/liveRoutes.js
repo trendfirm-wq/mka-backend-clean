@@ -9,21 +9,28 @@ const router = express.Router();
 router.post('/start', auth, async (req, res) => {
   try {
     const userId = req.user.id;
+    console.log('▶️ START LIVE for user:', userId);
 
     const existingLive = await Live.findOne({ userId, isLive: true });
+    console.log('Existing live:', existingLive);
+
     if (existingLive) {
       return res.status(400).json({ message: 'You are already live' });
     }
 
+    console.log('⏳ Creating Cloudflare live input...');
     const stream = await createLiveInput();
+    console.log('✅ Cloudflare stream created:', stream);
 
     const live = await Live.create({
       userId,
       title: req.body.title || 'Live Broadcast',
-      isLive: true,                 // 🔥 REQUIRED
-      webrtcUrl: stream.webrtcUrl,  // 🔥 REQUIRED
+      isLive: true,
+      webrtcUrl: stream.webrtcUrl,
       playbackUrl: stream.playbackUrl,
     });
+
+    console.log('✅ Live saved in DB:', live._id);
 
     res.json({
       message: 'Live started',
@@ -32,7 +39,7 @@ router.post('/start', auth, async (req, res) => {
       playbackUrl: stream.playbackUrl,
     });
   } catch (err) {
-    console.error(err);
+    console.error('❌ START LIVE ERROR:', err);
     res.status(500).json({ message: 'Failed to start live' });
   }
 });
