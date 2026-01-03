@@ -22,13 +22,15 @@ router.post('/start', auth, async (req, res) => {
     const stream = await createLiveInput();
     console.log('✅ Cloudflare stream created:', stream);
 
-    const live = await Live.create({
-      userId,
-      title: req.body.title || 'Live Broadcast',
-      isLive: true,
-      webrtcUrl: stream.webrtcUrl,
-      playbackUrl: stream.playbackUrl,
-    });
+   const live = await Live.create({
+  userId,
+  title: req.body.title || 'Live Broadcast',
+  isLive: true,
+  streamId: stream.streamId,      // 🔥 REQUIRED FIELD
+  webrtcUrl: stream.webrtcUrl,    // (optional but used)
+  playbackUrl: stream.playbackUrl,
+});
+
 
     console.log('✅ Live saved in DB:', live._id);
 
