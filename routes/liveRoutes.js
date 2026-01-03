@@ -10,29 +10,26 @@ router.post('/start', auth, async (req, res) => {
   try {
     const userId = req.user.id;
 
-    // Prevent multiple live sessions per user
     const existingLive = await Live.findOne({ userId, isLive: true });
     if (existingLive) {
       return res.status(400).json({ message: 'You are already live' });
     }
 
-    // Create Cloudflare Live Input
     const stream = await createLiveInput();
 
-    // Save Live session
     const live = await Live.create({
       userId,
       title: req.body.title || 'Live Broadcast',
-      streamId: stream.streamId,
+      isLive: true,                 // 🔥 REQUIRED
+      webrtcUrl: stream.webrtcUrl,  // 🔥 REQUIRED
       playbackUrl: stream.playbackUrl,
     });
 
     res.json({
       message: 'Live started',
-      rtmpUrl: stream.rtmpUrl,
-      streamKey: stream.streamKey,
-      playbackUrl: stream.playbackUrl,
       liveId: live._id,
+      webrtcUrl: stream.webrtcUrl,
+      playbackUrl: stream.playbackUrl,
     });
   } catch (err) {
     console.error(err);
@@ -98,29 +95,44 @@ router.post('/webrtc/offer', auth, async (req, res) => {
   try {
     const { sdp } = req.body;
 
+    console.log('📩 Received SDP offer');
+
     const live = await Live.findOne({ userId: req.user.id, isLive: true });
-    if (!live || !live.webrtcUrl) {
+
+    if (!live) {
+      console.error('❌ No live session found');
       return res.status(400).json({ message: 'No active live session' });
+    }
+
+    if (!live.webrtcUrl) {
+      console.error('❌ webrtcUrl missing in DB');
+      return res.status(400).json({ message: 'WebRTC URL missing' });
     }
 
     const cfRes = await fetch(live.webrtcUrl, {
       method: 'POST',
-      headers: {
-        'Content-Type': 'application/sdp',
-      },
+      headers: { 'Content-Type': 'application/sdp' },
       body: sdp,
     });
 
     const answerSDP = await cfRes.text();
+
+    console.log('📨 Cloudflare answer length:', answerSDP.length);
+
+    if (!answerSDP) {
+      console.error('❌ Empty SDP answer from Cloudflare');
+      return res.status(500).json({ message: 'Empty SDP answer' });
+    }
 
     res.json({
       type: 'answer',
       sdp: answerSDP,
     });
   } catch (err) {
-    console.error(err);
+    console.error('❌ WebRTC signaling error:', err);
     res.status(500).json({ message: 'WebRTC signaling failed' });
   }
 });
+
 
 module.exports = router;
