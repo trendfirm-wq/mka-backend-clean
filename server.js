@@ -7,6 +7,8 @@ const newsRoutes = require('./routes/newsRoutes');
 const forumRoutes = require('./routes/forumRoutes');
 const liveRoutes = require('./routes/liveRoutes');
 const adminShortsRoutes = require('./routes/adminShortsRoutes');
+const userRoutes = require('./routes/userRoutes');
+
 
 
 
