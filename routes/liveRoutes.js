@@ -4,28 +4,34 @@ const { createLiveKitToken } = require('../utils/livekit');
 
 const router = express.Router();
 
-/* 🔴 START LIVE (PUBLISHER) */
 router.post('/start', auth, (req, res) => {
-  const room = `live-${req.user.id}`;
+  try {
+    if (!req.user || !req.user.id) {
+      console.error('❌ req.user missing:', req.user);
+      return res.status(401).json({ message: 'Unauthorized' });
+    }
 
-  const token = createLiveKitToken({
-    room,
-    userId: req.user.id,
-    canPublish: true,
-  });
+    if (
+      !process.env.LIVEKIT_API_KEY ||
+      !process.env.LIVEKIT_API_SECRET
+    ) {
+      console.error('❌ LiveKit env vars missing');
+      return res.status(500).json({ message: 'LiveKit not configured' });
+    }
 
-  res.json({ room, token });
-});
+    const room = `live-${req.user.id}`;
 
-/* 👀 JOIN LIVE (VIEWER) */
-router.get('/join/:room', auth, (req, res) => {
-  const token = createLiveKitToken({
-    room: req.params.room,
-    userId: req.user.id,
-    canPublish: false,
-  });
+    const token = createLiveKitToken({
+      room,
+      userId: req.user.id,
+      canPublish: true,
+    });
 
-  res.json({ token });
+    return res.json({ room, token });
+  } catch (err) {
+    console.error('❌ LIVE START ERROR:', err);
+    return res.status(500).json({ message: 'Failed to start live' });
+  }
 });
 
 module.exports = router;
