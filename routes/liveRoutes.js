@@ -94,5 +94,33 @@ router.post('/stop', auth, async (req, res) => {
     res.status(500).json({ message: 'Failed to stop live' });
   }
 });
+router.post('/webrtc/offer', auth, async (req, res) => {
+  try {
+    const { sdp, type } = req.body;
+
+    const live = await Live.findOne({ userId: req.user.id, isLive: true });
+    if (!live || !live.webrtcUrl) {
+      return res.status(400).json({ message: 'No active live session' });
+    }
+
+    const cfRes = await fetch(live.webrtcUrl, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/sdp',
+      },
+      body: sdp,
+    });
+
+    const answerSDP = await cfRes.text();
+
+    res.json({
+      type: 'answer',
+      sdp: answerSDP,
+    });
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ message: 'WebRTC signaling failed' });
+  }
+});
 
 module.exports = router;
