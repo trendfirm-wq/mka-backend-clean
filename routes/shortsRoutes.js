@@ -87,5 +87,27 @@ router.post('/', async (req, res) => {
     res.status(500).json({ message: 'Failed to create short' });
   }
 });
+/**
+ * TEMP: CREATE PENDING SHORT (BROWSER TEST)
+ * GET /api/shorts/test-create
+ * REMOVE AFTER TESTING
+ */
+router.get('/test-create', async (req, res) => {
+  try {
+    const short = await Short.create({
+      videoKey: 'browser_test.mp4',
+      caption: 'Created from browser test',
+      author: 'browser@test.com',
+      status: 'pending',
+    });
+
+    res.json({
+      message: 'Pending short created',
+      id: short._id,
+    });
+  } catch (err) {
+    res.status(500).json({ message: 'Failed to create test short' });
+  }
+});
 
 module.exports = router;
