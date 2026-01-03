@@ -6,6 +6,8 @@ const connectDB = require('./config/db');
 const newsRoutes = require('./routes/newsRoutes');
 const forumRoutes = require('./routes/forumRoutes');
 const liveRoutes = require('./routes/liveRoutes');
+const adminShortsRoutes = require('./routes/adminShortsRoutes');
+
 
 
 const app = express();
@@ -28,6 +30,7 @@ app.use('/api/news', newsRoutes);
 app.use('/api/likes', require('./routes/likesRoutes'));
 app.use('/api/forum', forumRoutes);
 app.use('/api/shorts', require('./routes/shortsRoutes'));
+app.use('/api/admin/shorts', adminShortsRoutes);
 app.use('/api/comments', require('./routes/comments'));
 app.use('/api/live', liveRoutes);
 
