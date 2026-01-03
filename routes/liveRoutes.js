@@ -142,6 +142,18 @@ router.post('/webrtc/offer', auth, async (req, res) => {
     res.status(500).json({ message: 'WebRTC signaling failed' });
   }
 });
+router.get('/active', async (req, res) => {
+  const live = await Live.findOne({ isLive: true }).sort({ createdAt: -1 });
+
+  if (!live) {
+    return res.json(null);
+  }
+
+  res.json({
+    playbackUrl: live.playbackUrl,
+    title: live.title,
+  });
+});
 
 
 module.exports = router;
