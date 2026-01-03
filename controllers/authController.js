@@ -40,13 +40,14 @@ exports.login = async (req, res) => {
     { expiresIn: '7d' }
   );
 
-  res.json({
-    token,
-    user: {
-      id: user._id,
-      email: user.email,
-    },
-  });
+ res.json({
+  token,
+  user: {
+    id: user._id,
+    email: user.email,
+    avatar: user.avatar,
+  },
+});
 };
 
 exports.changePassword = async (req, res) => {
