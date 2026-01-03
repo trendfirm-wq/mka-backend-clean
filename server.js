@@ -33,6 +33,8 @@ app.use('/api/shorts', require('./routes/shortsRoutes'));
 app.use('/api/admin/shorts', adminShortsRoutes);
 app.use('/api/comments', require('./routes/comments'));
 app.use('/api/live', liveRoutes);
+app.use('/api/users', userRoutes);
+
 
 
 // Test route
