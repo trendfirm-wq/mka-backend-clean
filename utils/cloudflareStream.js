@@ -1,34 +1,30 @@
 const axios = require('axios');
 
 const CLOUDFLARE_API = 'https://api.cloudflare.com/client/v4';
+const ACCOUNT_ID = process.env.CLOUDFLARE_ACCOUNT_ID;
+const API_TOKEN = process.env.CLOUDFLARE_API_TOKEN;
 
-async function createLiveInput() {
+exports.createLiveInput = async () => {
   const res = await axios.post(
-    `${CLOUDFLARE_API}/accounts/${process.env.CLOUDFLARE_ACCOUNT_ID}/stream/live_inputs`,
+    `${CLOUDFLARE_API}/accounts/${ACCOUNT_ID}/stream/live_inputs`,
     {
-      meta: { name: 'App Live Stream' },
+      meta: { name: 'MKA Live Stream' },
       recording: { mode: 'off' },
     },
     {
       headers: {
-        Authorization: `Bearer ${process.env.CLOUDFLARE_API_TOKEN}`,
+        Authorization: `Bearer ${API_TOKEN}`,
         'Content-Type': 'application/json',
       },
     }
   );
 
-  if (!res.data.success) {
-    throw new Error('Cloudflare live input creation failed');
-  }
-
   const input = res.data.result;
 
   return {
     streamId: input.uid,
-    rtmpUrl: input.rtmps.url,
-    streamKey: input.rtmps.streamKey,
-    playbackUrl: `https://videodelivery.net/${input.uid}/manifest/video.m3u8`,
+    rtmpUrl: input.rtmps?.url || input.rtmp?.url,
+    streamKey: input.rtmps?.streamKey || input.rtmp?.streamKey,
+    playbackUrl: `https://customer-${ACCOUNT_ID}.cloudflarestream.com/${input.uid}/manifest/video.m3u8`,
   };
-}
-
-module.exports = { createLiveInput };
+};
