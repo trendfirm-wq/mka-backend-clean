@@ -87,5 +87,30 @@ router.post('/', async (req, res) => {
     res.status(500).json({ message: 'Failed to create short' });
   }
 });
+/**
+ * SEARCH APPROVED SHORTS BY CAPTION
+ * GET /api/shorts/search?q=keyword
+ */
+router.get('/search', async (req, res) => {
+  try {
+    const { q } = req.query;
+
+    if (!q) {
+      return res.json([]);
+    }
+
+    const Short = require('../models/Short');
+
+    const results = await Short.find({
+      status: 'approved',
+      caption: { $regex: q, $options: 'i' }, // case-insensitive
+    }).sort({ createdAt: -1 });
+
+    res.json(results);
+  } catch (err) {
+    console.error('Search error:', err);
+    res.status(500).json({ message: 'Search failed' });
+  }
+});
 
 module.exports = router;
