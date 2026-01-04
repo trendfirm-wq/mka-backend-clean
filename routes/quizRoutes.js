@@ -2,10 +2,10 @@ const express = require('express');
 const router = express.Router();
 const QuizResult = require('../models/QuizResult');
 const Notification = require('../models/Notification');
-
+const auth = require('../middleware/auth');
 
 /* ================= POST TA‘LIM QUIZ ================= */
-router.post('/submit', async (req, res) => {
+router.post('/submit', auth, async (req, res) => {
   try {
     const {
       quizId,
@@ -38,8 +38,8 @@ router.post('/submit', async (req, res) => {
     const percentage = Math.round((score / totalQuestions) * 100);
 
     const result = await QuizResult.create({
-      quizType: 'talim',          // ✅ FIXED
-      userId: 'test-user',
+      quizType: 'talim',
+      userId: req.user.id,
       name,
       region,
       zone,
@@ -50,13 +50,14 @@ router.post('/submit', async (req, res) => {
       percentage,
       answers,
     });
-     await Notification.create({
-  title: '📢 New Quiz Submission',
-  message: `${name} has submitted the Ta‘lim quiz`,
-  quizType: 'talim',
-});
 
-    console.log('✅ TA‘LIM QUIZ SAVED:', result._id);
+    // ✅ FIXED: notification is USER-SCOPED
+    await Notification.create({
+      userId: req.user.id,
+      title: '📢 Quiz Submitted',
+      message: 'You have successfully submitted the Ta‘lim quiz.',
+      quizType: 'talim',
+    });
 
     res.json({
       message: 'Quiz submitted successfully',
@@ -69,22 +70,21 @@ router.post('/submit', async (req, res) => {
 });
 
 /* ================= GET TA‘LIM RESULTS ================= */
-router.get('/results', async (req, res) => {
+router.get('/results', auth, async (req, res) => {
   try {
     const results = await QuizResult.find({
-      quizType: 'talim',          // ✅ CRITICAL FIX
+      quizType: 'talim',
+      userId: req.user.id,
     }).sort({ createdAt: -1 });
 
     res.json(results);
   } catch (err) {
-    console.error('❌ FETCH TA‘LIM RESULTS ERROR:', err);
     res.status(500).json({ message: 'Failed to fetch results' });
   }
 });
 
 /* ================= POST TARB IYYAT QUIZ ================= */
-/* ================= POST TARB IYYAT QUIZ ================= */
-router.post('/tarbiyyat/submit', async (req, res) => {
+router.post('/tarbiyyat/submit', auth, async (req, res) => {
   try {
     const {
       quizId,
@@ -118,26 +118,25 @@ router.post('/tarbiyyat/submit', async (req, res) => {
 
     const result = await QuizResult.create({
       quizType: 'tarbiyyat',
+      userId: req.user.id,
       quizId,
       name,
       region,
       zone,
       office,
-      userId: 'test-user',
       score,
       totalQuestions,
       percentage,
       answers,
     });
 
-    // ✅ MOVE NOTIFICATION HERE
+    // ✅ FIXED
     await Notification.create({
-      title: '📢 New Quiz Submission',
-      message: `${name} has submitted the Tarbiyyat quiz`,
+      userId: req.user.id,
+      title: '📢 Quiz Submitted',
+      message: 'You have successfully submitted the Tarbiyyat quiz.',
       quizType: 'tarbiyyat',
     });
-
-    console.log('✅ TARB IYYAT QUIZ SAVED:', result._id);
 
     res.json({
       message: 'Tarbiyyat quiz submitted successfully',
@@ -150,16 +149,16 @@ router.post('/tarbiyyat/submit', async (req, res) => {
 });
 
 /* ================= GET TARB IYYAT RESULTS ================= */
-router.get('/tarbiyyat/results', async (req, res) => {
+router.get('/tarbiyyat/results', auth, async (req, res) => {
   try {
     const results = await QuizResult.find({
       quizType: 'tarbiyyat',
+      userId: req.user.id,
     }).sort({ createdAt: -1 });
 
     res.json(results);
   } catch (err) {
-    console.error('❌ FETCH TARB IYYAT RESULTS ERROR:', err);
-    res.status(500).json({ message: 'Failed to fetch Tarbiyyat results' });
+    res.status(500).json({ message: 'Failed to fetch results' });
   }
 });
 

@@ -1,12 +1,14 @@
 const express = require('express');
 const router = express.Router();
 const Notification = require('../models/Notification');
+const auth = require('../middleware/auth');
 
-/* ================= GET ALL NOTIFICATIONS ================= */
-router.get('/', async (req, res) => {
+/* ================= GET USER NOTIFICATIONS ================= */
+router.get('/', auth, async (req, res) => {
   try {
-    const notifications = await Notification.find()
-      .sort({ createdAt: -1 });
+    const notifications = await Notification.find({
+      userId: req.user.id,
+    }).sort({ createdAt: -1 });
 
     res.json(notifications);
   } catch (err) {
@@ -16,11 +18,12 @@ router.get('/', async (req, res) => {
 });
 
 /* ================= MARK AS READ ================= */
-router.patch('/:id/read', async (req, res) => {
+router.patch('/:id/read', auth, async (req, res) => {
   try {
-    await Notification.findByIdAndUpdate(req.params.id, {
-      isRead: true,
-    });
+    await Notification.findOneAndUpdate(
+      { _id: req.params.id, userId: req.user.id },
+      { isRead: true }
+    );
 
     res.json({ success: true });
   } catch (err) {
@@ -30,9 +33,13 @@ router.patch('/:id/read', async (req, res) => {
 });
 
 /* ================= DELETE NOTIFICATION ================= */
-router.delete('/:id', async (req, res) => {
+router.delete('/:id', auth, async (req, res) => {
   try {
-    await Notification.findByIdAndDelete(req.params.id);
+    await Notification.findOneAndDelete({
+      _id: req.params.id,
+      userId: req.user.id,
+    });
+
     res.json({ success: true });
   } catch (err) {
     console.error('❌ DELETE NOTIFICATION ERROR:', err);
@@ -41,9 +48,10 @@ router.delete('/:id', async (req, res) => {
 });
 
 /* ================= UNREAD COUNT (BADGE) ================= */
-router.get('/count/unread', async (req, res) => {
+router.get('/count/unread', auth, async (req, res) => {
   try {
     const count = await Notification.countDocuments({
+      userId: req.user.id,
       isRead: false,
     });
 
