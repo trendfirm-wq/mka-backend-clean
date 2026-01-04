@@ -3,8 +3,7 @@ const mongoose = require('mongoose');
 const QuizResultSchema = new mongoose.Schema(
   {
     userId: {
-      type: mongoose.Schema.Types.ObjectId,
-      ref: 'User',
+      type: String, // ✅ CHANGE HERE
       required: true,
     },
 
@@ -29,7 +28,7 @@ const QuizResultSchema = new mongoose.Schema(
     },
 
     answers: {
-      type: [Number], // indexes of selected answers
+      type: [Number],
       default: [],
     },
   },
