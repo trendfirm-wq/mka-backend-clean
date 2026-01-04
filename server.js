@@ -11,6 +11,8 @@ const forumRoutes = require('./routes/forumRoutes');
 const liveRoutes = require('./routes/liveRoutes');
 const adminShortsRoutes = require('./routes/adminShortsRoutes');
 const userRoutes = require('./routes/userRoutes');
+const notificationRoutes = require('./routes/notificationRoutes');
+
 
 const app = express();
 
@@ -36,6 +38,8 @@ app.use('/api/admin/shorts', adminShortsRoutes);
 app.use('/api/comments', require('./routes/comments'));
 app.use('/api/live', liveRoutes);
 app.use('/api/users', userRoutes);
+app.use('/api/notifications', notificationRoutes);
+
 
 // ✅ QUIZ ROUTES (MongoDB)
 app.use('/api/quizzes', require('./routes/quizRoutes'));
