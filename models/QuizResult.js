@@ -2,8 +2,23 @@ const mongoose = require('mongoose');
 
 const QuizResultSchema = new mongoose.Schema(
   {
+    name: {
+      type: String,
+      required: true,
+    },
+
+    region: {
+      type: String,
+      required: true,
+    },
+
+    zone: {
+      type: String,
+      required: true,
+    },
+
     userId: {
-      type: String, // ✅ CHANGE HERE
+      type: String, // still string (Option 1)
       required: true,
     },
 
@@ -16,6 +31,10 @@ const QuizResultSchema = new mongoose.Schema(
       type: Number,
       required: true,
     },
+     office: {
+  type: String,
+  required: true,
+},
 
     totalQuestions: {
       type: Number,

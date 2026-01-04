@@ -1,15 +1,22 @@
-const express = require('express');
-const router = express.Router();
-const QuizResult = require('../models/QuizResult');
-
 router.post('/submit', async (req, res) => {
   try {
-    const { quizId, answers, correctAnswers } = req.body;
+    const {
+      quizId,
+      answers,
+      correctAnswers,
+      name,
+      region,
+      zone,
+      office,
+    } = req.body;
 
     if (
       !quizId ||
       !Array.isArray(answers) ||
-      !Array.isArray(correctAnswers)
+      !Array.isArray(correctAnswers) ||
+      !name ||
+      !region ||
+      !zone
     ) {
       return res.status(400).json({ message: 'Invalid submission' });
     }
@@ -23,7 +30,11 @@ router.post('/submit', async (req, res) => {
     const percentage = Math.round((score / totalQuestions) * 100);
 
     const result = await QuizResult.create({
-      userId: 'test-user', // ✅ NOW VALID
+      userId: 'test-user',
+      name,
+      region,
+      zone,
+      office,
       quizId,
       score,
       totalQuestions,
@@ -31,31 +42,12 @@ router.post('/submit', async (req, res) => {
       answers,
     });
 
-    console.log('✅ QUIZ SAVED:', result._id);
-
     res.json({
       message: 'Quiz submitted successfully',
-      score,
-      totalQuestions,
-      percentage,
-      resultId: result._id,
+      result,
     });
   } catch (err) {
-    console.error('❌ QUIZ SAVE ERROR:', err);
+    console.error(err);
     res.status(500).json({ message: 'Failed to submit quiz' });
   }
 });
-// GET all quiz results (latest first)
-router.get('/results', async (req, res) => {
-  try {
-    const results = await QuizResult.find()
-      .sort({ createdAt: -1 });
-
-    res.json(results);
-  } catch (err) {
-    console.error('❌ Fetch results error:', err);
-    res.status(500).json({ message: 'Failed to fetch results' });
-  }
-});
-
-module.exports = router;
