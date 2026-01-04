@@ -17,6 +17,12 @@ const NotificationSchema = new mongoose.Schema(
       enum: ['talim', 'tarbiyyat'],
       required: true,
     },
+
+    // ✅ ADD THIS
+    isRead: {
+      type: Boolean,
+      default: false,
+    },
   },
   { timestamps: true }
 );
