@@ -2,6 +2,17 @@ const mongoose = require('mongoose');
 
 const QuizResultSchema = new mongoose.Schema(
   {
+    quizType: {
+      type: String,
+      enum: ['talim', 'tarbiyyat'],
+      required: true,
+    },
+
+    quizId: {
+      type: String,
+      required: true,
+    },
+
     name: {
       type: String,
       required: true,
@@ -17,13 +28,13 @@ const QuizResultSchema = new mongoose.Schema(
       required: true,
     },
 
-    userId: {
-      type: String, // still string (Option 1)
+    office: {
+      type: String,
       required: true,
     },
 
-    quizId: {
-      type: String,
+    userId: {
+      type: String, // still Option 1
       required: true,
     },
 
@@ -31,10 +42,6 @@ const QuizResultSchema = new mongoose.Schema(
       type: Number,
       required: true,
     },
-     office: {
-  type: String,
-  required: true,
-},
 
     totalQuestions: {
       type: Number,
