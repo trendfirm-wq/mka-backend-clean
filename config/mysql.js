@@ -4,18 +4,20 @@ let pool;
 
 async function connectMySQL() {
   try {
-    pool = mysql.createPool({
-      host: process.env.MYSQL_HOST,
-      user: process.env.MYSQL_USER,
-      password: process.env.MYSQL_PASS,
-      database: process.env.MYSQL_DB,
-      port: 3306,
+    if (!process.env.MYSQL_PUBLIC_URL) {
+      throw new Error('MYSQL_PUBLIC_URL not set');
+    }
+
+    pool = mysql.createPool(process.env.MYSQL_PUBLIC_URL, {
       waitForConnections: true,
       connectionLimit: 10,
+      ssl: {
+        rejectUnauthorized: false,
+      },
     });
 
     await pool.query('SELECT 1');
-    console.log('✅ MySQL connected (quiz database)');
+    console.log('✅ MySQL connected (Railway)');
   } catch (err) {
     console.error('❌ MySQL connection failed', err);
     process.exit(1);
