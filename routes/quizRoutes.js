@@ -1,6 +1,8 @@
 const express = require('express');
 const router = express.Router();
 const QuizResult = require('../models/QuizResult');
+const Notification = require('../models/Notification');
+
 
 /* ================= POST TA‘LIM QUIZ ================= */
 router.post('/submit', async (req, res) => {
@@ -48,6 +50,11 @@ router.post('/submit', async (req, res) => {
       percentage,
       answers,
     });
+     await Notification.create({
+  title: '📢 New Quiz Submission',
+  message: `${name} has submitted the Ta‘lim quiz`,
+  quizType: 'talim',
+});
 
     console.log('✅ TA‘LIM QUIZ SAVED:', result._id);
 
@@ -75,6 +82,7 @@ router.get('/results', async (req, res) => {
   }
 });
 
+/* ================= POST TARB IYYAT QUIZ ================= */
 /* ================= POST TARB IYYAT QUIZ ================= */
 router.post('/tarbiyyat/submit', async (req, res) => {
   try {
@@ -120,6 +128,13 @@ router.post('/tarbiyyat/submit', async (req, res) => {
       totalQuestions,
       percentage,
       answers,
+    });
+
+    // ✅ MOVE NOTIFICATION HERE
+    await Notification.create({
+      title: '📢 New Quiz Submission',
+      message: `${name} has submitted the Tarbiyyat quiz`,
+      quizType: 'tarbiyyat',
     });
 
     console.log('✅ TARB IYYAT QUIZ SAVED:', result._id);
