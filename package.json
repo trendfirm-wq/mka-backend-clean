@@ -17,8 +17,7 @@
     "jsonwebtoken": "^9.0.2",
     "livekit-server-sdk": "^2.15.0",
     "mongoose": "^8.1.1",
-    "multer": "^2.0.2",
-    "mysql2": "^3.16.0"
+    "multer": "^2.0.2"
   },
   "devDependencies": {
     "nodemon": "^3.0.3"
