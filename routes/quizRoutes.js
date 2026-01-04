@@ -1,7 +1,8 @@
-const express = require('express');   // ✅ ADD
-const router = express.Router();      // ✅ ADD
+const express = require('express');
+const router = express.Router();
 const QuizResult = require('../models/QuizResult');
 
+/* ================= POST SUBMIT QUIZ ================= */
 router.post('/submit', async (req, res) => {
   try {
     const {
@@ -59,6 +60,17 @@ router.post('/submit', async (req, res) => {
   }
 });
 
+/* ================= GET QUIZ RESULTS ================= */
+router.get('/results', async (req, res) => {
+  try {
+    const results = await QuizResult.find()
+      .sort({ createdAt: -1 });
 
-// ✅ KEEP THIS AT THE BOTTOM
+    res.json(results);
+  } catch (err) {
+    console.error('❌ FETCH RESULTS ERROR:', err);
+    res.status(500).json({ message: 'Failed to fetch results' });
+  }
+});
+
 module.exports = router;
