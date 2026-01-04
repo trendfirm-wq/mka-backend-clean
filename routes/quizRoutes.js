@@ -53,11 +53,12 @@ router.post('/submit', auth, async (req, res) => {
 
     // ✅ FIXED: notification is USER-SCOPED
     await Notification.create({
-      userId: req.user.id,
-      title: '📢 Quiz Submitted',
-      message: 'You have successfully submitted the Ta‘lim quiz.',
-      quizType: 'talim',
-    });
+  userId: req.user.id,
+  title: '📢 Quiz Submitted',
+  message: `${name} has submitted the Ta‘lim quiz`,
+  quizType: 'talim',
+});
+
 
     res.json({
       message: 'Quiz submitted successfully',
@@ -131,12 +132,13 @@ router.post('/tarbiyyat/submit', auth, async (req, res) => {
     });
 
     // ✅ FIXED
-    await Notification.create({
-      userId: req.user.id,
-      title: '📢 Quiz Submitted',
-      message: 'You have successfully submitted the Tarbiyyat quiz.',
-      quizType: 'tarbiyyat',
-    });
+   await Notification.create({
+  userId: req.user.id,
+  title: '📢 Quiz Submitted',
+  message: `${name} has submitted the Tarbiyyat quiz`,
+  quizType: 'tarbiyyat',
+});
+
 
     res.json({
       message: 'Tarbiyyat quiz submitted successfully',
