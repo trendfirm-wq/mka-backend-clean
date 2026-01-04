@@ -45,5 +45,17 @@ router.post('/submit', async (req, res) => {
     res.status(500).json({ message: 'Failed to submit quiz' });
   }
 });
+// GET all quiz results (latest first)
+router.get('/results', async (req, res) => {
+  try {
+    const results = await QuizResult.find()
+      .sort({ createdAt: -1 });
+
+    res.json(results);
+  } catch (err) {
+    console.error('❌ Fetch results error:', err);
+    res.status(500).json({ message: 'Failed to fetch results' });
+  }
+});
 
 module.exports = router;
