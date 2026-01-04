@@ -36,17 +36,19 @@ router.post('/submit', async (req, res) => {
     const percentage = Math.round((score / totalQuestions) * 100);
 
     const result = await QuizResult.create({
-      userId: 'test-user',
-      name,
-      region,
-      zone,
-      office,
-      quizId,
-      score,
-      totalQuestions,
-      percentage,
-      answers,
-    });
+  quizType: 'talim',   // ✅ ADD THIS LINE
+  userId: 'test-user',
+  name,
+  region,
+  zone,
+  office,
+  quizId,
+  score,
+  totalQuestions,
+  percentage,
+  answers,
+});
+
 
     console.log('✅ QUIZ SAVED:', result._id);
 
