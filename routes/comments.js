@@ -17,8 +17,8 @@ router.post('/shorts/:shortId', auth, async (req, res) => {
       text,
     });
 
-    // OPTIONAL: populate email for immediate response
-    await comment.populate('userId', 'email');
+    // ✅ Populate BOTH email + avatar
+    await comment.populate('userId', 'email avatar');
 
     res.json(comment);
   } catch (err) {
@@ -33,7 +33,8 @@ router.get('/shorts/:shortId', async (req, res) => {
     const comments = await Comment.find({
       shortId: req.params.shortId,
     })
-      .populate('userId', 'email') // ✅ THIS IS THE IMPORTANT LINE
+      // ✅ Populate BOTH fields
+      .populate('userId', 'email avatar')
       .sort({ createdAt: -1 });
 
     res.json(comments);

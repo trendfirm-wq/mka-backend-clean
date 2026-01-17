@@ -7,10 +7,13 @@ const CommentSchema = new mongoose.Schema(
       required: true,
       index: true,
     },
+
     userId: {
       type: mongoose.Schema.Types.ObjectId,
+      ref: 'User',       // ✅ REQUIRED FOR POPULATE
       required: true,
     },
+
     text: {
       type: String,
       required: true,
