@@ -1,6 +1,7 @@
 const express = require('express');
 const router = express.Router();
 const Comment = require('../models/Comment');
+const mongoose = require('mongoose');
 const auth = require('../middleware/auth');
 
 /* ================= ADD COMMENT ================= */
@@ -12,12 +13,11 @@ router.post('/shorts/:shortId', auth, async (req, res) => {
     }
 
     const comment = await Comment.create({
-      shortId: req.params.shortId,
+      shortId: new mongoose.Types.ObjectId(req.params.shortId),  // ✅ FIXED
       userId: req.user.id,
       text,
     });
 
-    // ✅ Populate BOTH email + avatar
     await comment.populate('userId', 'email avatar');
 
     res.json(comment);
@@ -31,9 +31,8 @@ router.post('/shorts/:shortId', auth, async (req, res) => {
 router.get('/shorts/:shortId', async (req, res) => {
   try {
     const comments = await Comment.find({
-      shortId: req.params.shortId,
+      shortId: new mongoose.Types.ObjectId(req.params.shortId),  // ✅ FIXED
     })
-      // ✅ Populate BOTH fields
       .populate('userId', 'email avatar')
       .sort({ createdAt: -1 });
 
@@ -48,7 +47,7 @@ router.get('/shorts/:shortId', async (req, res) => {
 router.get('/shorts/:shortId/count', async (req, res) => {
   try {
     const count = await Comment.countDocuments({
-      shortId: req.params.shortId,
+      shortId: new mongoose.Types.ObjectId(req.params.shortId),  // ✅ FIXED
     });
 
     res.json({ count });
