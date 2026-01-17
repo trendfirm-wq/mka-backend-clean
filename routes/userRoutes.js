@@ -3,6 +3,7 @@ const router = express.Router();
 const auth = require('../middleware/auth');
 const multer = require('multer');
 const cloudinary = require('cloudinary').v2;
+const User = require('../models/User');  // ✅ ADD THIS
 
 const upload = multer({ dest: 'uploads/' });
 
@@ -21,14 +22,20 @@ router.post('/avatar', auth, upload.single('avatar'), async (req, res) => {
 
     const result = await cloudinary.uploader.upload(req.file.path, {
       folder: 'avatars',
-      width: 300,
-      height: 300,
-      crop: 'fill',
+      width: 500,          // Higher quality than before
+      height: 500,
+      crop: 'limit',
+    });
+
+    // 🔥 Save the URL in MongoDB
+    await User.findByIdAndUpdate(req.user.id, {
+      avatar: result.secure_url,
     });
 
     return res.json({
-      avatar: result.secure_url, // ✅ REAL IMAGE URL
+      avatar: result.secure_url,   // Send back new image URL
     });
+
   } catch (err) {
     console.error(err);
     res.status(500).json({ message: 'Avatar upload failed' });

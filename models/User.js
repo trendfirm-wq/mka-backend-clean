@@ -8,10 +8,17 @@ const userSchema = new mongoose.Schema({
     lowercase: true,
     trim: true,
   },
+
   password: {
     type: String,
     required: true,
   },
-});
+
+  // 🔥 NEW FIELD — stores Cloudinary avatar URL
+  avatar: {
+    type: String,
+    default: "",
+  },
+}, { timestamps: true });
 
 module.exports = mongoose.model('User', userSchema);
