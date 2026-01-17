@@ -6,23 +6,30 @@ const News = require('../models/News');
 ============================================ */
 exports.createNews = async (req, res) => {
   try {
-    const { title, content, image, author } = req.body;
+    const { title, content, images, author } = req.body;
 
-    if (!title || !content || !image) {
-      return res.status(400).json({ message: "Title, content & image are required." });
+    // images MUST be an array (1 or more)
+    if (!title || !content || !images || !Array.isArray(images) || images.length === 0) {
+      return res.status(400).json({
+        message: "Title, content & at least ONE image are required.",
+      });
     }
 
     const news = await News.create({
       title,
       content,
-      image,
+      images,            // <--- STORE MULTIPLE IMAGES
       author: author || "anonymous",
     });
 
     res.status(201).json(news);
+
   } catch (err) {
     console.error("CREATE NEWS ERROR:", err);
-    res.status(500).json({ message: "Failed to create news", error: err.message });
+    res.status(500).json({
+      message: "Failed to create news",
+      error: err.message,
+    });
   }
 };
 
@@ -38,13 +45,17 @@ exports.getAllNews = async (req, res) => {
       _id: item._id,
       title: item.title,
       content: item.content,
-      image: item.image,
+
+      // RETURN ONLY 1st IMAGE FOR LIST PAGE
+      image: item.images?.[0] || null,
+
       author: item.author,
       createdAt: item.createdAt,
       likesCount: item.likesCount || 0,
     }));
 
     res.json(formatted);
+
   } catch (err) {
     console.error("GET NEWS ERROR:", err);
     res.status(500).json({ message: "Failed to fetch news" });
@@ -63,7 +74,8 @@ exports.getSingleNews = async (req, res) => {
       return res.status(404).json({ message: "News not found" });
     }
 
-    res.json(news);
+    res.json(news); // returns FULL article including images[]
+
   } catch (err) {
     console.error("GET SINGLE NEWS ERROR:", err);
     res.status(500).json({ message: "Failed to fetch article" });
@@ -104,6 +116,7 @@ exports.toggleLike = async (req, res) => {
       liked: !alreadyLiked,
       likesCount: news.likesCount,
     });
+
   } catch (err) {
     console.error("TOGGLE LIKE ERROR:", err);
     res.status(500).json({ message: "Failed to update like" });

@@ -14,9 +14,9 @@ const newsSchema = new mongoose.Schema(
       required: true,
     },
 
-    // CLOUDINARY public_id or image URL
-    image: {
-      type: String,
+    // MULTIPLE IMAGES (Cloudinary public_ids)
+    images: {
+      type: [String],    // <-- UPDATED: now accepts multiple images
       required: true,
     },
 
