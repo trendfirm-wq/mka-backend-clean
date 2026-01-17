@@ -13,6 +13,7 @@ cloudinary.config({
   api_secret: process.env.CLOUDINARY_SECRET,
 });
 
+/* ⭐ FIXED AVATAR UPLOAD — NO COMPRESSION, NO RESIZE */
 router.post('/avatar', auth, upload.single('avatar'), async (req, res) => {
   try {
     if (!req.file) {
@@ -21,13 +22,15 @@ router.post('/avatar', auth, upload.single('avatar'), async (req, res) => {
 
     const result = await cloudinary.uploader.upload(req.file.path, {
       folder: 'avatars',
-      width: 300,
-      height: 300,
-      crop: 'fill',
+      quality: "100",        // 🔥 KEEP FULL QUALITY
+      fetch_format: "auto",  // 🔥 Best format (png/webp)
+      flags: "lossless",     // 🔥 No compression
+      dpr: "2.0",            // 🔥 High pixel density for retina
+      transformation: [],    // 🔥 DO NOT RESIZE / DO NOT CROP
     });
 
     return res.json({
-      avatar: result.secure_url, // ✅ REAL IMAGE URL
+      avatar: result.secure_url,
     });
   } catch (err) {
     console.error(err);
