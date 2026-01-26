@@ -39,6 +39,7 @@ app.use('/api/comments', require('./routes/comments'));
 app.use('/api/live', liveRoutes);
 app.use('/api/users', userRoutes);
 app.use('/api/notifications', notificationRoutes);
+app.use('/api/mkaai', require('./routes/mkaAIRoutes'));
 
 
 // ✅ QUIZ ROUTES (MongoDB)
