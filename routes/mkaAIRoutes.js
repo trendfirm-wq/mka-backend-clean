@@ -9,7 +9,7 @@ router.post("/", async (req, res) => {
   }
 
   const HF_API_URL =
-    "https://router.huggingface.co/hf-inference/mistralai/Mistral-7B-Instruct-v0.2";
+    "https://router.huggingface.co/hf-inference/HuggingFaceH4/zephyr-7b-beta";
 
   try {
     const response = await fetch(HF_API_URL, {
@@ -19,7 +19,7 @@ router.post("/", async (req, res) => {
         "Content-Type": "application/json",
       },
       body: JSON.stringify({
-        inputs: `You are MKA AI. Answer with Islamic and Ahmadiyya teachings.\n\nQuestion: ${question}\n\nAnswer:`,
+        inputs: `You are MKA AI. Answer using Islam and Ahmadiyyat teachings.\n\nQuestion: ${question}\n\nAnswer:`,
         parameters: {
           max_new_tokens: 300,
           temperature: 0.4,
@@ -33,7 +33,7 @@ router.post("/", async (req, res) => {
       return res.json({ answer: data.generated_text });
     } else {
       return res.json({
-        answer: "⚠️ Model returned no text.",
+        answer: "⚠️ Model returned no output.",
         raw: data,
       });
     }
