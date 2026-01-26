@@ -3,6 +3,9 @@ const fetch = require("node-fetch");
 
 const router = express.Router();
 
+// New official HF Router URL
+const HF_URL = "https://router.huggingface.co/hf-inference/models/mistralai/Mistral-7B-Instruct-v0.2";
+
 router.post("/", async (req, res) => {
   const question = req.body.question;
 
@@ -10,11 +13,8 @@ router.post("/", async (req, res) => {
     return res.json({ answer: "No question sent." });
   }
 
-  const HF_URL =
-    "https://api-inference.huggingface.co/models/mistralai/Mistral-7B-Instruct-v0.2";
-
   const payload = {
-    inputs: `You are MKA AI. Answer ONLY using teachings of Islam and Ahmadiyyat.\n\nQuestion: ${question}\n\nAnswer:`,
+    inputs: `You are MKA AI. Answer with teachings of Islam and Ahmadiyyat.\n\nQuestion: ${question}\n\nAnswer:`,
     parameters: {
       max_new_tokens: 250,
       temperature: 0.4,
@@ -33,8 +33,9 @@ router.post("/", async (req, res) => {
 
     const data = await response.json();
 
+    // NEW HF Router response format
     const answer =
-      data[0]?.generated_text ||
+      data.generated_text ||
       data.error ||
       "⚠️ AI did not respond. Try again later.";
 
